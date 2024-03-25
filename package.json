@@ -17,6 +17,7 @@
     "bootstrap": "^5.0.1",
     "cdbreact": "^1.5.18",
     "cors": "^2.8.5",
+    "icons": "^1.0.0",
     "latest-version": "^7.0.0",
     "postcss-loader": "^7.3.3",
     "qs": "^6.11.2",

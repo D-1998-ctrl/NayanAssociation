@@ -86,7 +86,7 @@ function CalculatorApi() {
                     overflowY: "hidden",
                 }}
             >
-                <Navbar />
+                {/* <Navbar /> */}
                 <div style={{ height: "100%" }}>
                     <div
                         style={{

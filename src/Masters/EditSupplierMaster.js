@@ -1,35 +1,39 @@
-
-
 import { useState, useEffect } from "react";
 import Sidebar from "../Sidebar";
 import Navbar from "../Navbar";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-export default function SupplierMaster() {
-  const [companycode, setCompanycode] = useState("");
-  const [companyname, setCompanyname] = useState("");
+export default function EditCustomerMaster() {
+  //All Field coming throw in the Address api//
+  const [setId, changeId] = useState("");
+  const [setAddressId, changeAddressId] = useState("");
+  const [comapnycode, comapnycodechange] = useState("");
+  const [companyname, companynamechange] = useState("");
+  const [accountId, account_idchange] = useState("");
   const [address1, address1change] = useState("");
   const [address2, address2change] = useState("");
   const [city, citychange] = useState("");
-  const [state, statechange] = useState("");
+  const [StateId, statechange] = useState("");
   const [mobile, setMobile] = useState("");
   const [email, setEmail] = useState("");
+  const [contactperson, contactpersonchange] = useState("");
   const [gstno, gstnochahge] = useState("");
-  
-  const [contact_person, setContact_person] = useState("");
+  //   const [pan, panchange] = useState("");
 
-  const postAPI = (accountId) => {
+  const postAPI = (accountId, AddressId) => {
     const id = accountId;
     let config = {
       method: "post",
       mode: "cors",
+
       maxBodyLength: Infinity,
       url: "https://truecodeapi.microtechsolutions.co.in/api/Address",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       data: {
+        Id: setAddressId,
         AccountId: accountId,
         Address1: address1,
         Address2: address2,
@@ -37,7 +41,7 @@ export default function SupplierMaster() {
         Pin: "416006",
         Email: email,
         Mobile: mobile,
-        StateId: state,
+        StateId: StateId,
         URL: "abc",
         GSTNumber: gstno,
       },
@@ -47,7 +51,7 @@ export default function SupplierMaster() {
       .request(config)
       .then((response) => {
         console.log(JSON.stringify(response.data));
-        alert("Supplier Address Data Saved Successfully");
+        alert("Customer Data Update Successfully");
         window.location.reload();
       })
       .catch((error) => {
@@ -67,7 +71,8 @@ export default function SupplierMaster() {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       data: {
-        AccountCode: companycode,
+        Id: setId,
+        AccountCode: comapnycode,
         GroupId: 1,
         SubGroupId: 6,
         AccountName: companyname,
@@ -83,7 +88,7 @@ export default function SupplierMaster() {
       .request(config)
       .then((response) => {
         console.log(JSON.stringify(response.data));
-        alert("account data Saved Successfully");
+        alert("Update Successfully");
 
         postAPI(response.data);
         window.location.reload();
@@ -93,14 +98,8 @@ export default function SupplierMaster() {
       });
   };
 
-  const navigate = useNavigate();
-  const Supplierlist = () => {
-    navigate("/supplierlist");
-  };
-
- 
-
   const [cities, setcities] = useState([]);
+
   const getCityData = async () => {
     const url = "https://truecodeapi.microtechsolutions.co.in/api/City";
     let result = await fetch(url);
@@ -132,6 +131,69 @@ export default function SupplierMaster() {
     }, 1000);
   }, []);
 
+  const navigate = useNavigate();
+
+  const CustomerMasterList = () => {
+    navigate("/suppliermasterapi");
+  };
+
+  const { Id } = useParams();
+  useEffect(() => {
+    const getcategory = async () => {
+      const res = await fetch(
+        "https://truecodeapi.microtechsolutions.co.in/api/Address?Id=" + Id
+      );
+      const getdata = await res.json();
+      console.log("API Response:", getdata.Id);
+      CustomerData(getdata);
+    };
+
+    getcategory();
+  }, []);
+
+  useEffect(() => {
+    const getcategory = async () => {
+      const res = await fetch(
+        "https://truecodeapi.microtechsolutions.co.in/api/AccountMaster?Id=" +
+          Id
+      );
+      const getdata = await res.json();
+
+      AccountData(getdata);
+    };
+
+    getcategory();
+  }, []);
+
+  const CustomerData = (getdata) => {
+    console.log(getdata);
+
+    changeAddressId(getdata.Id);
+    account_idchange(getdata.AccountId);
+    address1change(getdata.Address1);
+    address2change(getdata.Address2);
+    citychange(getdata.CityId);
+    statechange(getdata.StateId);
+    setMobile(getdata.Mobile);
+    setEmail(getdata.Email);
+    gstnochahge(getdata.GSTNumber);
+  };
+
+  const AccountData = (getdata) => {
+    changeId(getdata.Id);
+    comapnycodechange(getdata.AccountCode);
+    companynamechange(getdata.AccountName);
+  };
+
+  const supplierMaster = () => {
+    navigate("/suppliermaster");
+  };
+
+  // const navigate = useNavigate();
+  const Supplierlist = () => {
+    navigate("/supplierlist");
+  };
+
   return (
     <div className="d-flex">
       <div>
@@ -143,7 +205,7 @@ export default function SupplierMaster() {
           display: "flex",
           flexFlow: "column",
           height: "100vh",
-          overflow: "hidden",
+          overflowY: "hidden",
         }}
       >
         <Navbar />
@@ -152,7 +214,7 @@ export default function SupplierMaster() {
             style={{
               padding: "20px 5%",
               height: "calc(100% - 64px)",
-              overflow: "scroll",
+              overflowY: "scroll",
               background: "whitesmoke",
             }}
           >
@@ -176,7 +238,7 @@ export default function SupplierMaster() {
                             className="page-title"
                             style={{ color: "#00308F", textAlign: "center" }}
                           >
-                            Supplier Master
+                            Edit Supplier Master
                           </h3>
                         </div>
                       </div>
@@ -191,36 +253,34 @@ export default function SupplierMaster() {
                           >
                             <form>
                               <div className="row">
-                              <div className="col-12 col-sm-4 ">
+                                <div className="col-12 col-sm-4">
                                   <div className="form-group local-forms">
                                     <label>
-                                     Company Code{" "}
+                                      Company code{" "}
                                       <span className="login-danger"></span>
                                     </label>
                                     <input
-                                   
-                                      value={companycode}
+                                      value={comapnycode}
                                       onChange={(e) =>
-                                        setCompanycode(e.target.value)
+                                        comapnycodechange(e.target.value)
                                       }
                                       type="text"
                                       className="form-control"
-                                      
+                                      readOnly
                                     />
                                   </div>
                                 </div>
 
-                                <div className="col-12 col-sm-4 ">
+                                <div className="col-12 col-sm-4">
                                   <div className="form-group local-forms">
                                     <label>
                                       Company Name{" "}
                                       <span className="login-danger"></span>
                                     </label>
                                     <input
-                                   
                                       value={companyname}
                                       onChange={(e) =>
-                                        setCompanyname(e.target.value)
+                                        companynamechange(e.target.value)
                                       }
                                       type="text"
                                       className="form-control"
@@ -245,7 +305,7 @@ export default function SupplierMaster() {
                                   </div>
                                 </div>
 
-                                 <div className="col-12 col-sm-4">
+                                <div className="col-12 col-sm-4">
                                   <div className="form-group local-forms">
                                     <label>
                                       Address 2{" "}
@@ -254,7 +314,7 @@ export default function SupplierMaster() {
                                     <input
                                       value={address2}
                                       onChange={(e) =>
-                                       address2change(e.target.value)
+                                        address2change(e.target.value)
                                       }
                                       type="text"
                                       className="form-control"
@@ -288,7 +348,6 @@ export default function SupplierMaster() {
                                     </select>
                                   </div>
                                 </div>
-
                                 <div className="col-12 col-sm-4">
                                   <div className="form-group local-forms">
                                     <label>
@@ -296,7 +355,7 @@ export default function SupplierMaster() {
                                       <span className="login-danger"></span>
                                     </label>
                                     <select
-                                      value={state}
+                                      value={StateId}
                                       onChange={(e) =>
                                         statechange(e.target.value)
                                       }
@@ -317,7 +376,6 @@ export default function SupplierMaster() {
                                     </select>
                                   </div>
                                 </div>
-
                                 <div className="col-12 col-sm-4">
                                   <div className="form-group local-forms">
                                     <label>
@@ -334,7 +392,6 @@ export default function SupplierMaster() {
                                     />
                                   </div>
                                 </div>
-
                                 <div className="col-12 col-sm-4">
                                   <div className="form-group local-forms">
                                     <label>
@@ -349,16 +406,18 @@ export default function SupplierMaster() {
                                     />
                                   </div>
                                 </div>
-{/* 
-                                   <div className="col-12 col-sm-4">
+
+                                {/* <div className="col-12 col-sm-4">
                                   <div className="form-group local-forms">
                                     <label>
-                                     Contact Person{" "}
+                                      Contact Person{" "}
                                       <span className="login-danger"></span>
                                     </label>
                                     <input
-                                      value={contact_person}
-                                      onChange={(e) => setContact_person(e.target.value)}
+                                      value={contactperson}
+                                      onChange={(e) =>
+                                        contactpersonchange(e.target.value)
+                                      }
                                       type="text"
                                       className="form-control"
                                     />
@@ -368,7 +427,8 @@ export default function SupplierMaster() {
                                 <div className="col-12 col-sm-4">
                                   <div className="form-group local-forms">
                                     <label>
-                                      GST <span className="login-danger"></span>
+                                      GST No{" "}
+                                      <span className="login-danger"></span>
                                     </label>
                                     <input
                                       value={gstno}
@@ -382,19 +442,17 @@ export default function SupplierMaster() {
                                 </div>
 
                                 <hr className="my-3" />
-
                                 <div className="col-12 col-sm-4">
-                                  <div className="supplier-submit">
-                                    <button  onClick={postAccountMaster}
-                                      type="submit"
-                                      className="btn btn-primary"
+                                  <div className="supplier-clear">
+                                    <button
+                                      type="button"
+                                      className="btn btn-success"
+                                      onClick={postAccountMaster}
                                     >
-                                      Submit
-                                      
+                                      Update
                                     </button>
                                   </div>
                                 </div>
-
                                 <div className="col-12 col-sm-4">
                                   <div className="supplier-clear">
                                     <button
